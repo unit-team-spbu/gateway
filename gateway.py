@@ -238,6 +238,7 @@ class Gateway:
             {
                 "token": <token>, (optional)
                 "interests": ['tag1', 'tag2', ...] (optional)
+                "ind": [True, False, ...] (optional)
             }
         response:
             interests if it's GET and message for code 
@@ -260,15 +261,19 @@ class Gateway:
         if request.method == 'GET':
             self.logger_rpc.log(self.name, self.interest_handler.__name__, str(request), "Info", "Getting user's interests")
             interests = self.uis_rpc.get_weights_by_id(user)
+            ind = self.uis_rpc.get_bool_list(user)
             clean_interests = list()
             for item in interests.items():
                 if item[1] > 0:
                     clean_interests.append(item[0])
-            return self._cors_response(Response(json.dumps(clean_interests, ensure_ascii=False), 200), '*', 'POST, PUT, GET, OPTIONS')
+            resp = {"interests": clean_interests, "ind": ind}
+            return self._cors_response(Response(json.dumps(resp, ensure_ascii=False), 200), '*', 'POST, PUT, GET, OPTIONS')
         
         interests = self._get_content(request)['interests']
         try:
             self.uis_rpc.create_new_q([user, interests])
+            ind = self._get_content(request)['ind']
+            self.uis_rpc.save_bool_list(user, ind)
             self.logger_rpc.log(self.name, self.interest_handler.__name__, str(request), "Info", "Interests updated")
         except:
             self.logger_rpc.log(self.name, self.interest_handler.__name__, str(request), "Error", "Can't change interests")
