@@ -138,7 +138,8 @@ Status: 200 - успех
 Content-Type: application/json
 
 {
-    "interests": ['tag1', 'tag2', ...]
+    "interests": ['tag1', 'tag2', ...],
+    "ind": [True, False, False, ...]
 }
 
 Response (Не передан токен, либо он неверный):
@@ -156,7 +157,8 @@ Content-Type: application/json
 
 {
     "token": <token>,
-    "interests": ['tag1', 'tag2', ...]
+    "interests": ['tag1', 'tag2', ...],
+    "ind": [True, False, False, ...]
 }
 
 Response (Сообщение об успешном добвалении, либо ошибка):
@@ -174,7 +176,8 @@ Content-Type: application/json
 
 {
     "token": <token>,
-    "interests": ['tag1', 'tag2', ...]
+    "interests": ['tag1', 'tag2', ...],
+    "ind": [True, False, False, ...]
 }
 
 Response (Сообщение об успешном изменении, либо ошибка):
