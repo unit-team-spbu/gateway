@@ -67,6 +67,7 @@ Content-Type: application/json
 
 [
     {
+        "_id": <event_id>,
         "title": <title>,
         "location": <location>,
         "startDate": <startDate>,
@@ -76,6 +77,7 @@ Content-Type: application/json
         "tags": [..] - list
     },
     {
+        "_id": <event_id>,
         "title": <title>,
         "location": <location>,
         "startDate": <startDate>,
@@ -109,6 +111,7 @@ Status: 200
 Content-Type: application/json
 
 {
+    "_id": <event_id>,
     "title": <title>,
     "location": <location>,
     "startDate": <startDate>,
