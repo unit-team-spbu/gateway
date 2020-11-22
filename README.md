@@ -1,13 +1,30 @@
-# API Gateway
+# API - медиатор для микросервисов
+
+Данный документ содержит описание работы и информацию о развертке микросервиса API.
 
 Название сервиса: `gateway`
 
 Общедоступный IP-адрес: `20.52.2.24`
 
+Структура сервиса:
+
+| Файл                 | Описание                                                |
+| -------------------- | ------------------------------------------------------- |
+| `gateway.py`         | Код микросервиса                                        |
+| `config.yml`         | Конфигурационный файл со строкой подключения к RabbitMQ |
+| `run.sh`             | Файл для запуска сервиса из Docker контейнера           |
+| `requirements.txt`   | Верхнеуровневые зависимости                             |
+| `Dockerfile`         | Описание сборки контейнера сервиса                      |
+| `docker-compose.yml` | Изолированная развертка сервиса вместе с RabbitMQ       |
+| `README.md`          | Описание микросервиса                                   |
+
 ## API
+
 ### HTTP
- - Регистрация пользователей:
-```
+
+Регистрация пользователей:
+
+```rst
 POST http://localhost:8000/register HTTP/1.1
 Content-Type: application/json
 
@@ -24,8 +41,10 @@ Content-Type: application/json
     "message": <msg>
 }
 ```
-- Вход:
-```
+
+Вход:
+
+```rst
 POST http://localhost:8000/login HTTP/1.1
 Content-Type: application/json
 
@@ -50,9 +69,12 @@ Content-Type: application/json
     "message": <msg>
 }
 ```
-В теле всех остальных запросов _должен присутствовать JWT токен_, если это зарегистрированный пользователь
-- Получение ленты событий:
-```
+
+**В теле всех остальных запросов должен присутствовать JWT токен, если это зарегистрированный пользователь.**
+
+Получение ленты событий:
+
+```rst
 POST http://localhost:8000/feed HTTP/1.1
 Content-Type: application/json
 
@@ -97,8 +119,10 @@ Content-Type: application/json
     "message": <msg>
 }
 ```
-- Получение определенного события:
-```
+
+Получение определенного события:
+
+```rst
 GET http://localhost:8000/feed/<string:event_id>?token=<token> HTTP/1.1
 
 Query parameters:
@@ -129,8 +153,10 @@ Content-Type: application/json
     "message": <msg>
 }
 ```
-- Получение интересов пользователя
-```
+
+Получение интересов пользователя:
+
+```rst
 GET http://localhost:8000/profile/interests?token=<token> HTTP/1.1
 
 Query parameters:
@@ -155,8 +181,10 @@ Content-Type: application/json
     "message": <msg>
 }
 ```
-- Добавление новой анкеты интересов:
-```
+
+Добавление новой анкеты интересов:
+
+```rst
 POST http://localhost:8000/profile/interests HTTP/1.1
 Content-Type: application/json
 
@@ -166,7 +194,7 @@ Content-Type: application/json
     "ind": [True, False, False, ...]
 }
 
-Response (Сообщение об успешном добвалении, либо ошибка):
+Response (Сообщение об успешном добавлении, либо ошибка):
 Status: 200 - успех, 401 - пользователь не авторизован (токен не передан), 403 - неверный токен
 Content-Type: application/json
 
@@ -174,8 +202,10 @@ Content-Type: application/json
     "message": <msg>
 }
 ```
-- Изменение интересов:
-```
+
+Изменение интересов:
+
+```rst
 PUT http://localhost:8000/profile/interests HTTP/1.1
 Content-Type: application/json
 
@@ -193,9 +223,12 @@ Content-Type: application/json
     "message": <msg>
 }
 ```
-Далее описаны запросы для лайков, для добавление в избранное заменить like на favorite в адресе
-- Реакционное событие (добавление лайка):
-```
+
+**Далее описаны запросы для лайков, для добавление в избранное заменить like на favorite в адресе.**
+
+Реакционное событие (добавление лайка):
+
+```rst
 POST http://localhost:8000/reaction/like HTTP/1.1
 Content-Type: application/json
 
@@ -212,8 +245,10 @@ Content-Type: application/json
     "message": <msg>
 }
 ```
-- Реакционное событие (получение всех лайков/наличие лайка у мероприятия):
-```
+
+Реакционное событие (получение всех лайков/наличие лайка у мероприятия):
+
+```rst
 GET http://localhost:8000/reaction/like?token=<token>&event_id=<event_id> HTTP/1.1
 Content-Type: application/json
 
@@ -249,8 +284,10 @@ Content-Type: application/json
     "message": <msg>
 }
 ```
-- Реакционное событие (удаление лайка):
-```
+
+Реакционное событие (удаление лайка):
+
+```rst
 DELETE http://localhost:8000/reaction/like HTTP/1.1
 Content-Type: application/json
 
@@ -267,3 +304,29 @@ Content-Type: application/json
     "message": <msg>
 }
 ```
+
+## Развертывание и запуск
+
+### Локальный запуск
+
+Для локального запуска микросервиса требуется запустить контейнер с RabbitMQ.
+
+```bat
+docker-compose up -d
+```
+
+Затем из папки микросервиса вызвать
+
+```bat
+nameko run gateway
+```
+
+### Запуск в контейнере
+
+Чтобы запустить микросервис в контейнере вызовите команду:
+
+```bat
+docker-compose up
+```
+
+> если вы не хотите просмотривать логи, добавьте флаг `-d` в конце
