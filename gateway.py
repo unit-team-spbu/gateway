@@ -164,16 +164,17 @@ class Gateway:
             return self._cors_response(Response(), '*', 'POST, OPTIONS')
 
         authorized, user = self._token_validate_by_body(request)
+
+        # if there's no tags provided
+        try:
+            tags = self._get_content(request)['tags']
+        except KeyError:
+            tags = []
+        
         if authorized:
             # if token is invalid
             if not user:
                 return self._cors_response(Response(json.dumps({"message": "Invalid token"}), status=403), '*', 'POST, OPTIONS')
-
-            # if there's no tags provided
-            try:
-                tags = self._get_content(request)['tags']
-            except KeyError:
-                tags = []
 
             try:
                 events = self.filter_rpc.get_events(user, tags)
@@ -183,7 +184,7 @@ class Gateway:
 
         else:
             try:
-                events = self.event_das_rpc.get_events_by_date()
+                events = self.filter_rpc.get_events(None, tags)
                 self.logger_rpc.log(self.name, self.feed_handler.__name__, str(request), "Info", "Got feed for non-authorized user")
             except:
                 self.logger_rpc.log(self.name, self.feed_handler.__name__, str(request), "Error", "Can't get info from event_das")
